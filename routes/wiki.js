@@ -13,18 +13,34 @@ wikiRouter.get('/', function (req, res, next) {
 
 wikiRouter.post('/', function (req, res, next) {
   console.log('Got wiki post');
+
+  // Info
   const title = req.body.title;
   const content = req.body.content;
-  // const url = generateUrlTitle(title);
-  console.log(req.body);
-  var page = Page.build({
-    title: title,
-    content: content
-  });
+  const name = req.body.name;
+  const email = req.body.email;
+  const status = req.body.status;
 
-  page.save().then(
-    (savedPage) => res.redirect(savedPage.route)
-  ).catch((err) => console.log('there was an err', err) );
+
+  User.findOrCreate({
+    where: {
+      name: name,
+      email: email
+    }
+  }).then( (values) => {
+    const user = values[0];
+
+    const page = Page.build({
+      title: title,
+      content: content
+    });
+    return page.save().then(
+      (savedPage) => {
+        return savedPage.setAuthor(user);
+      }
+    ).then((nextPage) => res.redirect(nextPage.route))
+    .catch(next);
+  });
 
   // res.json(req.body);
 });
@@ -38,5 +54,5 @@ wikiRouter.get('/:urlTitle', (req, res, next) => {
       urlTitle: req.params.urlTitle
     }
   }).then((foundPage) => res.render('wikipage', {foundPage: foundPage}))
-  .catch(next)
-})
+  .catch(next);
+});
