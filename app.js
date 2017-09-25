@@ -17,7 +17,7 @@ nunjucks.configure('views', {
     noCache: true,
 });
 
-// app.use('/', routes);
+
 // Where your server and express app are being defined:
 
 var models = require('./models');
@@ -35,3 +35,6 @@ models.User.sync({})
     });
 })
 .catch(console.error);
+
+
+// app.use('/', routes);
