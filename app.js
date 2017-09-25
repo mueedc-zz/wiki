@@ -3,6 +3,7 @@ const express = require('express'),
     nunjucks = require('nunjucks'),
     bodyParser = require('body-parser');
 const app = express();
+const routes = require('./routes');
 
 app.use(morgan('dev'));
 app.use(bodyParser.json());
@@ -17,21 +18,26 @@ nunjucks.configure('views', {
     noCache: true,
 });
 
-// app.use('/', routes);
+app.use('/', routes);
+
 // Where your server and express app are being defined:
 
 var models = require('./models');
 
 // ... other stuff
 
+
 models.User.sync({})
 .then(function () {
     return models.Page.sync({});
 })
 .then(function () {
+
     // make sure to replace the name below with your express app
     app.listen(3000, function () {
         console.log('Server is listening on port 3000!');
     });
 })
 .catch(console.error);
+
+
