@@ -23,7 +23,7 @@ wikiRouter.post('/', function (req, res, next) {
   });
 
   page.save().then(
-    () => res.json(req.body)
+    (savedPage) => res.redirect(savedPage.route)
   ).catch((err) => console.log('there was an err', err) );
 
   // res.json(req.body);
@@ -31,3 +31,12 @@ wikiRouter.post('/', function (req, res, next) {
 wikiRouter.get('/add', function (req, res, next) {
   res.render('addpage');
 });
+
+wikiRouter.get('/:urlTitle', (req, res, next) => {
+  Page.findOne({
+    where: {
+      urlTitle: req.params.urlTitle
+    }
+  }).then((foundPage) => res.render('wikipage', {foundPage: foundPage}))
+  .catch(next)
+})
